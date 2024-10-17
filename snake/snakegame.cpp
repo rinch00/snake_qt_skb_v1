@@ -3,8 +3,10 @@
 #include <QRandomGenerator>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QTimer>
+#include <QKeyEvent>
 
-SnakeGame::SnakeGame(QWidget *parent) : QWidget(parent), inGame(true), paused(false), snakeLength(3), score(0) {
+SnakeGame::SnakeGame(QWidget *parent) : QWidget(parent), restartButton(nullptr), inGame(true), paused(false), snakeLength(3), score(0) {
     setStyleSheet("background-color: black;");
 
     resetState();
@@ -99,21 +101,16 @@ void SnakeGame::timerEvent(QTimerEvent *event) {
 
 
 void SnakeGame::keyPressEvent(QKeyEvent *event) {
-    if (paused && event->key() == Qt::Key_Space) {
-        continueGame();
-        return;
-    }
-
     int key = event->key();
     QString text = event->text();
 
-    if ((key == Qt::Key_W ||key == Qt::Key_Up || text == "ц") && direction != DOWN) {
-        direction =UP;
-    } else if ((key == Qt::Key_S || key == Qt::Key_Down || text == "ы") && direction != UP) {
+    if ((key == Qt::Key_W || key == Qt::Key_Up || text == "ц") && direction != DOWN && direction != UP) {
+        direction = UP;
+    } else if ((key == Qt::Key_S || key == Qt::Key_Down || text == "ы") && direction != UP && direction != DOWN) {
         direction = DOWN;
-    } else if ((key == Qt::Key_A || key == Qt::Key_Left || text == "ф") && direction != RIGHT) {
+    } else if ((key == Qt::Key_A || key == Qt::Key_Left || text == "ф") && direction != RIGHT && direction != LEFT) {
         direction = LEFT;
-    } else if ((key == Qt::Key_D || key == Qt::Key_Right || text == "в")&& direction != LEFT) {
+    } else if ((key == Qt::Key_D || key == Qt::Key_Right || text == "в") && direction != LEFT && direction != RIGHT) {
         direction = RIGHT;
     } else if (key == Qt::Key_Space) {
         showPauseMenu();
@@ -121,7 +118,6 @@ void SnakeGame::keyPressEvent(QKeyEvent *event) {
 
     QWidget::keyPressEvent(event);
 }
-
 
 void SnakeGame::move() {
     if (paused) return;  // Если игра на паузе, не двигаемся
@@ -191,11 +187,11 @@ void SnakeGame::checkCollision() {
 }
 
 void SnakeGame::locateFood() {
-    int maxX = (width() / DOT_SIZE) * DOT_SIZE;
-    int maxY = (height() / DOT_SIZE) * DOT_SIZE;
+    int maxX = (width() / DOT_SIZE) * DOT_SIZE - 1;
+    int maxY = (height() / DOT_SIZE) * DOT_SIZE - 1;
 
-    int randomX = QRandomGenerator::global()->bounded(0, maxX/DOT_SIZE) * DOT_SIZE;
-    int randomY = QRandomGenerator::global()->bounded(0, maxY/DOT_SIZE) * DOT_SIZE;
+    int randomX = QRandomGenerator::global()->bounded(0, maxX/DOT_SIZE + 1) * DOT_SIZE;
+    int randomY = QRandomGenerator::global()->bounded(0, maxY/DOT_SIZE + 1) * DOT_SIZE;
 
     foodX = randomX;
     foodY = randomY;

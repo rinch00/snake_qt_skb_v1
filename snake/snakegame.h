@@ -2,9 +2,10 @@
 #define SNAKEGAME_H
 
 #include <QWidget>
-#include <QTimer>
-#include <QKeyEvent>
 #include <QtWidgets/qpushbutton.h>
+
+class QTimer;
+class QKeyEvent;
 
 class SnakeGame : public QWidget
 {
@@ -20,7 +21,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    QPushButton *restartButton;
+    QPushButton *restartButton = nullptr;
 
     enum Direction {LEFT, RIGHT, UP, DOWN};
     static const int BORD_WIDTH = 10;
